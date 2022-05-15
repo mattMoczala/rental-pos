@@ -1,8 +1,9 @@
 import * as express from "express";
-import rental from "../models/rental";
+import RentalModel from "../models/rental";
 import mongoose from "mongoose";
 import TypedRequestBody from "../types/RequestType";
 import { RentalNotPopulated, RentalPopulatedWithData } from "../types/Rental";
+import { logAction } from "../logger";
 
 export const router = express.Router();
 
@@ -14,14 +15,14 @@ router.get(
     next: express.NextFunction
   ) {
     if (req.query.getOnlyOngoing) {
-        await rental
-        .find({ongoing: true})
+      await RentalModel
+        .find({ ongoing: true })
         .populate("client")
         .populate("rented")
         .exec(
           (
             err: mongoose.MongooseError,
-            rentals: Array<RentalPopulatedWithData>
+            rentals: Array<RentalNotPopulated>
           ) => {
             if (err) {
               console.log(err);
@@ -33,40 +34,7 @@ router.get(
                 },
               };
               res.status(500);
-              res.set({ "content-type": "application/json charset=utf-8" });
-              res.send(JSON.stringify(response));
-            } else {
-              const response = {
-                status: "succ",
-                data: rental,
-              };
-              res.status(200);
-              res.set({ "content-type": "application/json charset=utf-8" });
-              res.send(JSON.stringify(response));
-            }
-          }
-        );
-    } else {
-      await rental
-        .find()
-        .populate("client")
-        .populate("rented")
-        .exec(
-          (
-            err: mongoose.MongooseError,
-            rentals: Array<RentalPopulatedWithData>
-          ) => {
-            if (err) {
-              console.log(err);
-
-              const response = {
-                status: "err",
-                data: {
-                  message: `Server error occured.`,
-                },
-              };
-              res.status(500);
-              res.set({ "content-type": "application/json charset=utf-8" });
+              res.set({ "content-type": "application/json" });
               res.send(JSON.stringify(response));
             } else {
               const response = {
@@ -74,7 +42,40 @@ router.get(
                 data: rentals,
               };
               res.status(200);
-              res.set({ "content-type": "application/json charset=utf-8" });
+              res.set({ "content-type": "application/json" });
+              res.send(JSON.stringify(response));
+            }
+          }
+        );
+    } else {
+      await RentalModel
+        .find()
+        .populate("client")
+        .populate("rented")
+        .exec(
+          (
+            err: mongoose.MongooseError,
+            rentals: Array<RentalNotPopulated>
+          ) => {
+            if (err) {
+              console.log(err);
+
+              const response = {
+                status: "err",
+                data: {
+                  message: `Server error occured.`,
+                },
+              };
+              res.status(500);
+              res.set({ "content-type": "application/json" });
+              res.send(JSON.stringify(response));
+            } else {
+              const response = {
+                status: "succ",
+                data: rentals,
+              };
+              res.status(200);
+              res.set({ "content-type": "application/json" });
               res.send(JSON.stringify(response));
             }
           }
@@ -90,7 +91,7 @@ router.post(
     res: express.Response,
     next: express.NextFunction
   ) {
-    const data = new rental({
+    const data = new RentalModel({
       priceTotal: req.body.priceTotal,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
@@ -108,8 +109,52 @@ router.post(
         },
       };
       res.status(201);
-      res.set({ "contnet-type": "application/json charset=utf-8" });
+      res.set({ "contnet-type": "application/json" });
       res.send(JSON.stringify(response));
     });
+  }
+);
+
+router.get(
+  "/changeRentalStatus",
+  async function (
+    req: TypedRequestBody<typeof RentalModel>,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    if (typeof req.query.id == "string") {
+      await RentalModel
+        .findById(req.query.id)
+        .exec(
+          (
+            err: mongoose.MongooseError,
+            rental: RentalNotPopulated
+          ) => {
+            RentalModel.findByIdAndUpdate(req.query.id, {ongoing: !rental.ongoing}).exec(()=>{
+              if (!err) {
+                const response = {
+                  status: "succ",
+                  data: {
+                    message: `rental "${req.query.id}" status changed.`,
+                    currentStatus: !rental.ongoing
+                  },
+                };
+              }
+            })
+          }
+        );
+    } else {
+      logAction(`GET /rent/changeRentalStatus\tProvided parameter id, "${req.query.id}"  is invalid or does not exist in database.`, "error");
+
+      const response = {
+        status: "err",
+        data: {
+          message: `GET /rent/changeRentalStatus\tProvided parameter id, "${req.query.id}"  is invalid or does not exist in database.`,
+        },
+      };
+      res.status(420);
+      res.set({ "content-type": "application/json" });
+      res.send(JSON.stringify(response));
+    }
   }
 );

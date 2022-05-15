@@ -16,6 +16,7 @@
     "@types/express-session": "^1.17.4",
     "@types/http-errors": "^1.8.2",
     "@types/morgan": "^1.9.3",
+    "@types/vhost": "^3.0.4",
     "body-parser": "^1.20.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.6",
@@ -29,6 +30,7 @@
     "morgan": "^1.10.0",
     "passport": "^0.5.2",
     "rimraf": "^3.0.2",
-    "simple-node-logger": "^21.8.12"
+    "simple-node-logger": "^21.8.12",
+    "vhost": "^3.0.2"
   }
 }

@@ -1,4 +1,5 @@
 import * as mongoose from "mongoose";
+import {RentalNotPopulated} from "../types/Rental"
 
 const rentalItem = new mongoose.Schema({
     item: {
@@ -9,7 +10,7 @@ const rentalItem = new mongoose.Schema({
     itemRealIdentifier: {type: Number, required: false}
 })
 
-const rental = new mongoose.Schema({
+const RentalModel = new mongoose.Schema({
   priceTotal: { type: Number, required: true },
   startDate: { type: Date, required: true},
   endDate: { type: Date, required: true},
@@ -23,4 +24,4 @@ const rental = new mongoose.Schema({
   createdOn: { type: Date, required: true, default: Date.now() },
 });
 
-export default mongoose.model("Rental", rental);
+export default mongoose.model<RentalNotPopulated>("Rental", RentalModel);

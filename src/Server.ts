@@ -5,15 +5,18 @@ import * as logger from "morgan";
 import * as cookieParser from "cookie-parser";
 import * as createError from "http-errors";
 import * as path from "path";
+import * as vhost from "vhost";
 import * as session from "express-session";
 import { logAction } from "./logger";
 let passport = require("passport");
 let bodyParser = require("body-parser");
 import ConnectionConstrustor from "./db/ConnectionConstructor";
 import * as index from './routes/index';
+import * as rent from './routes/rent';
+import * as client from './routes/client';
+import * as item from './routes/item';
 import Auth from "./types/Auth";
 import TypedRequestBody from "./types/RequestType";
-
 
 
 export class Server {
@@ -23,19 +26,29 @@ export class Server {
   private dbConnection: ConnectionConstrustor;
   private dbAuth: Auth; 
   private dbHostname: string;
+  private servableDomainList: Array<string>;
 
-  constructor(dbHostname:string, auth: Auth) {
+  constructor(dbHostname:string, auth: Auth, domain:Array<string>) {
     this.dbHostname = dbHostname;
     this.dbAuth = auth;
     this.dbAuth.useNewUrlParser = true;
-
-
+    this.servableDomainList = domain;
+    
     this.dbConnection = new ConnectionConstrustor(this.dbAuth, this.dbHostname);
   }
 
   private _setUpExpressConfig() {
-    this.app.set("view engine", "jade");
-    this.app.set("views", path.join(__dirname + "/views"));
+    // this.app.set("view engine", "pug");
+    // this.app.set("views", path.join(__dirname + "/views"));
+
+    this.app.use((req: express.Request, res: express.Response, next: express.NextFunction)=> {
+      if (!this.servableDomainList.includes(req.headers.host)) {
+        logAction(`${req.method} ${req.headers.host}${req.originalUrl} user requested unserved domain`,"error")
+        res.send(`<div style="margin-left:auto;margin-right:auto"><b>404</b></div>`);
+      } else {
+        next();
+      }
+    })
 
     this.app.use(bodyParser.json({ limit: "50mb" }));
     this.app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
@@ -64,6 +77,10 @@ export class Server {
 
     // const indexRouter = require("./routes/index");
     this.app.use("/", index.router);
+    this.app.use("/client", client.router);
+    this.app.use("/rent", rent.router);
+    this.app.use("/item", item.router);
+    // this.app.use(subdomain('api', index.router));
 
     this.app.use("/robots.txt", function (req: TypedRequestBody<null>, res: express.Response, next: express.NextFunction) {
       res.type("text/plain");
@@ -81,8 +98,9 @@ export class Server {
 
       // render the error page
       res.status(err.status || 500);
-      res.render("error", { err: err });
+      res.send(`<div style="margin-left:auto;margin-right:auto;width:40px"><b>${err.status || 500}</b></div>`);
     });
+
   }
 
   public startWebServer() {
@@ -98,7 +116,7 @@ export class Server {
     );
 
     this.server.listen(this.port, () => {
-      logAction(`server started on port ${this.port}...`, "info");
+      logAction(`server started on ${this.servableDomainList}:${this.port}...`, "info");
     });
   }
 }

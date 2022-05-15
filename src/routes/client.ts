@@ -13,6 +13,7 @@ router.get(
     res: express.Response,
     next: express.NextFunction
   ) {
+    try{
     await client
       .find()
       .exec(
@@ -30,7 +31,7 @@ router.get(
               },
             };
             res.status(500);
-            res.set({ "content-type": "application/json charset=utf-8" });
+            res.set({ "content-type": "application/json" });
             res.send(JSON.stringify(response));
           } else {
             const response = {
@@ -38,11 +39,14 @@ router.get(
               data: clients,
             };
             res.status(200);
-            res.set({ "content-type": "application/json charset=utf-8" });
+            res.set({ "content-type": "application/json" });
             res.send(JSON.stringify(response));
           }
         }
       );
+    } catch(error){
+      console.log(error)
+    }
   }
 );
 
@@ -70,7 +74,7 @@ router.post(
           },
         };
         res.status(201);
-        res.set({ "contnet-type": "application/json charset=utf-8" });
+        res.set({ "contnet-type": "application/json" });
         res.send(JSON.stringify(response));
       });
     }

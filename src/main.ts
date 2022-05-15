@@ -5,7 +5,7 @@ const app = new Server("localhost:27017", {
     user: "admin",
     pass: "admin",
     useNewUrlParser: false
-});
+}, ["api.moczaladev.pl"]);
 
 app.startWebServer();
 

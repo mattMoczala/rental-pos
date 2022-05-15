@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 
-const item = new mongoose.Schema({
+const ItemModel = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
   image: { type: String, required: false },
@@ -9,4 +9,4 @@ const item = new mongoose.Schema({
   createdOn: { type: Date, required: true, default: Date.now() },
 });
 
-export default mongoose.model("Item", item);
+export default mongoose.model("Item", ItemModel);
