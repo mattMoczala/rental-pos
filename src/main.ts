@@ -1,11 +1,17 @@
 import { Server } from "./Server";
 
-const app = new Server("localhost:27017", {
-    dbName: "relax",
-    user: "admin",
-    pass: "admin",
-    useNewUrlParser: false
-}, ["api.moczaladev.pl"]);
+const backend = new Server(["api.moczaladev.pl"], 8080, {
+    hostname: "localhost:27017",
+    auth: {
+        dbName: "relax",
+        user: "admin",
+        pass: "admin",
+        useNewUrlParser: false
+    }
+});
 
-app.startWebServer();
+const frontend = new Server(["moczaladev.pl"], 7070);
+
+backend.startWebServer();
+frontend.startWebServer();
 

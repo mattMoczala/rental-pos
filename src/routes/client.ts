@@ -1,8 +1,9 @@
 import * as express from "express";
-import client from "../models/client";
+import ClientModel from "../models/client";
 import Client from "../types/Client";
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 import TypedRequestBody from "../types/RequestType";
+import { logAction } from "../logger";
 
 export const router = express.Router();
 
@@ -13,14 +14,9 @@ router.get(
     res: express.Response,
     next: express.NextFunction
   ) {
-    try{
-    await client
-      .find()
-      .exec(
-        (
-          err: mongoose.MongooseError,
-          clients: Array<Client>
-        ) => {
+    try {
+      await ClientModel.find().exec(
+        (err: mongoose.MongooseError, clients: Array<Client>) => {
           if (err) {
             console.log(err);
 
@@ -44,39 +40,77 @@ router.get(
           }
         }
       );
-    } catch(error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
   }
 );
 
 router.post(
-    "/",
-    async function (
-      req: TypedRequestBody<Client>,
-      res: express.Response,
-      next: express.NextFunction
-    ) {
-      const data = new client({
-        name: req.body.name,
-        surname: req.body.surname,
-        pesel: req.body.pesel,
-        nip: req.body.nip,
-        phoneNumber: req.body.phoneNumber
-      });
-  
-      data.save().then((savedData: typeof data) => {
-        let response = {
-          status: "succ",
-          data: {
-            message: `Succesfully created client.`,
-            data: savedData,
-          },
-        };
-        res.status(201);
-        res.set({ "contnet-type": "application/json" });
-        res.send(JSON.stringify(response));
-      });
-    }
-  );
-  
+  "/",
+  async function (
+    req: TypedRequestBody<Client>,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    const data = new ClientModel({
+      name: req.body.name,
+      surname: req.body.surname,
+      pesel: req.body.pesel,
+      nip: req.body.nip,
+      phoneNumber: req.body.phoneNumber,
+    });
+
+    data.save().then((savedData: typeof data) => {
+      let response = {
+        status: "succ",
+        data: {
+          message: `Succesfully created client.`,
+          data: savedData,
+        },
+      };
+      logAction(response.data.message,"info");
+      res.status(201);
+      res.set({ "contnet-type": "application/json" });
+      res.send(JSON.stringify(response));
+    });
+  }
+);
+
+router.delete(
+  "/",
+  async function (
+    req: TypedRequestBody<Client>,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    ClientModel.findByIdAndDelete(
+      req.query.id,
+      (err: typeof mongoose.Error) => {
+        if (err) {
+          let response = {
+            status: "err",
+            data: {
+              message: `An server error occured while deleting client ${req.query.id}.`,
+            },
+          };
+          res.status(500);
+          res.set({ "content-type": "application/json" });
+          res.send(JSON.stringify(response));
+          logAction(response.data.message, "error");
+        } else {
+          let response = {
+            status: "succ",
+            data: {
+              message: `Deleted client with id ${req.query.id}.`,
+            },
+          };
+          res.status(200);
+          res.set({ "content-type": "application/json" });
+          res.send(JSON.stringify(response));
+          logAction(response.data.message, "info");
+        }
+      }
+    );
+  }
+);

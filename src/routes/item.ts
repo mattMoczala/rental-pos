@@ -3,6 +3,7 @@ import ItemModel from "../models/item";
 import Item from "../types/Item";
 import mongoose from "mongoose";
 import TypedRequestBody from "../types/RequestType";
+import { logAction } from "../logger";
 
 export const router = express.Router();
 
@@ -43,5 +44,36 @@ router.get(
           }
         }
       );
+  }
+);
+
+router.post(
+  "/",
+  async function (
+    req: TypedRequestBody<Item>,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    const data = new ItemModel({
+      name: req.body.name,
+      price: req.body.price,
+      image: req.body.image,
+      unitsAviable: req.body.unitsAviable,
+      unitsTotal: req.body.unitsTotal
+    });
+
+    data.save().then((savedData: typeof data) => {
+      let response = {
+        status: "succ",
+        data: {
+          message: `Succesfully created item.`,
+          data: savedData,
+        },
+      };
+      res.status(201);
+      logAction(response.data.message,"info");
+      res.set({ "contnet-type": "application/json" });
+      res.send(JSON.stringify(response));
+    });
   }
 );

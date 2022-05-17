@@ -24,7 +24,7 @@ export interface RentalNotPopulated{
     ongoing: boolean
     rented: [{
         item: Item,
-        itemRealIdentifier: number
+        itemRealIdentifier: string
     }]
     client: Client,
     createdOn: Date

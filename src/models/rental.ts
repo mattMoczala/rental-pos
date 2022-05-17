@@ -7,7 +7,7 @@ const rentalItem = new mongoose.Schema({
         ref: "Item",
         required: true,
       },
-    itemRealIdentifier: {type: Number, required: false}
+    itemRealIdentifier: {type: String, required: false}
 })
 
 const RentalModel = new mongoose.Schema({

@@ -15,15 +15,11 @@ router.get(
     next: express.NextFunction
   ) {
     if (req.query.getOnlyOngoing) {
-      await RentalModel
-        .find({ ongoing: true })
+      await RentalModel.find({ ongoing: true })
         .populate("client")
         .populate("rented")
         .exec(
-          (
-            err: mongoose.MongooseError,
-            rentals: Array<RentalNotPopulated>
-          ) => {
+          (err: mongoose.MongooseError, rentals: Array<RentalNotPopulated>) => {
             if (err) {
               console.log(err);
 
@@ -48,15 +44,11 @@ router.get(
           }
         );
     } else {
-      await RentalModel
-        .find()
+      await RentalModel.find()
         .populate("client")
         .populate("rented")
         .exec(
-          (
-            err: mongoose.MongooseError,
-            rentals: Array<RentalNotPopulated>
-          ) => {
+          (err: mongoose.MongooseError, rentals: Array<RentalNotPopulated>) => {
             if (err) {
               console.log(err);
 
@@ -104,10 +96,11 @@ router.post(
       let response = {
         status: "succ",
         data: {
-          message: `Succesfully rented item.`,
+          message: `Succesfully created rental to client "${req.body.client}".`,
           data: savedData,
         },
       };
+      logAction(response.data.message, "info");
       res.status(201);
       res.set({ "contnet-type": "application/json" });
       res.send(JSON.stringify(response));
@@ -122,39 +115,41 @@ router.get(
     res: express.Response,
     next: express.NextFunction
   ) {
-    if (typeof req.query.id == "string") {
-      await RentalModel
-        .findById(req.query.id)
-        .exec(
-          (
-            err: mongoose.MongooseError,
-            rental: RentalNotPopulated
-          ) => {
-            RentalModel.findByIdAndUpdate(req.query.id, {ongoing: !rental.ongoing}).exec(()=>{
-              if (!err) {
-                const response = {
-                  status: "succ",
-                  data: {
-                    message: `rental "${req.query.id}" status changed.`,
-                    currentStatus: !rental.ongoing
-                  },
-                };
-              }
-            })
+      await RentalModel.findById(req.query.id).exec(
+        (err: mongoose.MongooseError, rental: RentalNotPopulated) => {
+          if (!err) {
+            RentalModel.findByIdAndUpdate(req.query.id, {
+              ongoing: !rental.ongoing,
+            }).exec(() => {
+              const response = {
+                status: "succ",
+                data: {
+                  message: `rental "${req.query.id}" status changed.`,
+                  currentStatus: !rental.ongoing,
+                },
+              };
+              logAction(response.data.message,"info")
+              res.status(200);
+              res.set({ "content-type": "application/json" });
+              res.send(JSON.stringify(response));
+            });
+          } else {
+            logAction(
+              `GET /rent/changeRentalStatus\tProvided parameter id, "${req.query.id}"  is invalid or does not exist in database.`,
+              "error"
+            );
+      
+            const response = {
+              status: "err",
+              data: {
+                message: `GET /rent/changeRentalStatus\tProvided parameter id: "${req.query.id}"  is invalid or does not exist in database.`,
+              },
+            };
+            res.status(420);
+            res.set({ "content-type": "application/json" });
+            res.send(JSON.stringify(response));
           }
-        );
-    } else {
-      logAction(`GET /rent/changeRentalStatus\tProvided parameter id, "${req.query.id}"  is invalid or does not exist in database.`, "error");
-
-      const response = {
-        status: "err",
-        data: {
-          message: `GET /rent/changeRentalStatus\tProvided parameter id, "${req.query.id}"  is invalid or does not exist in database.`,
-        },
-      };
-      res.status(420);
-      res.set({ "content-type": "application/json" });
-      res.send(JSON.stringify(response));
-    }
+        }
+      );
   }
 );

@@ -15,26 +15,37 @@ import * as index from './routes/index';
 import * as rent from './routes/rent';
 import * as client from './routes/client';
 import * as item from './routes/item';
-import Auth from "./types/Auth";
+import {DBAuth, Auth} from "./types/Auth";
 import TypedRequestBody from "./types/RequestType";
 
 
 export class Server {
   private app: express.Application = express();
   private server: https.Server;
-  private port = process.env.PORT || 443;
+  private port: number;
   private dbConnection: ConnectionConstrustor;
   private dbAuth: Auth; 
   private dbHostname: string;
   private servableDomainList: Array<string>;
+  private useClientRoutes: boolean;
+  private useAPIroutes: boolean;
 
-  constructor(dbHostname:string, auth: Auth, domain:Array<string>) {
-    this.dbHostname = dbHostname;
-    this.dbAuth = auth;
-    this.dbAuth.useNewUrlParser = true;
+  constructor(domain:Array<string>, port: number, db?: DBAuth) {
     this.servableDomainList = domain;
+    this.port = port
     
-    this.dbConnection = new ConnectionConstrustor(this.dbAuth, this.dbHostname);
+    if (db) {
+      this.dbHostname = db.hostname;
+      this.dbAuth = db.auth;
+      this.dbAuth.useNewUrlParser = true;
+      this.dbConnection = new ConnectionConstrustor(this.dbAuth, this.dbHostname);
+      this.useClientRoutes = false;
+      this.useAPIroutes = true;
+    } else {
+      this.useClientRoutes = false;
+      this.useAPIroutes = true;
+    }
+    
   }
 
   private _setUpExpressConfig() {
@@ -42,8 +53,8 @@ export class Server {
     // this.app.set("views", path.join(__dirname + "/views"));
 
     this.app.use((req: express.Request, res: express.Response, next: express.NextFunction)=> {
-      if (!this.servableDomainList.includes(req.headers.host)) {
-        logAction(`${req.method} ${req.headers.host}${req.originalUrl} user requested unserved domain`,"error")
+      if (!this.servableDomainList.includes(req.hostname)) {
+        logAction(`${req.method} ${req.hostname}${req.originalUrl} user requested unserved domain`,"error")
         res.send(`<div style="margin-left:auto;margin-right:auto"><b>404</b></div>`);
       } else {
         next();
@@ -75,12 +86,13 @@ export class Server {
 
     this.app.use(require("connect-flash")());
 
-    // const indexRouter = require("./routes/index");
+    if (this.useClientRoutes) {
+    } if (this.useAPIroutes) {
     this.app.use("/", index.router);
     this.app.use("/client", client.router);
     this.app.use("/rent", rent.router);
     this.app.use("/item", item.router);
-    // this.app.use(subdomain('api', index.router));
+    }
 
     this.app.use("/robots.txt", function (req: TypedRequestBody<null>, res: express.Response, next: express.NextFunction) {
       res.type("text/plain");
