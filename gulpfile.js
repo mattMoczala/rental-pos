@@ -10,6 +10,7 @@ let paths = {
     keys: ['./src/keys/https/**'],
     views: ['./src/views/**'],
     static: ['./src/static/**'],
+    website: ['./src/website/**']
 }
 
 gulp.task('removeBuild', function(done) {
@@ -39,6 +40,10 @@ gulp.task("copy-static", function() {
         .pipe(gulp.dest("build/static"));
 });
 
+gulp.task("copy-website", function() {
+    return gulp.src(paths.website)
+        .pipe(gulp.dest("build/website"));
+});
 
 gulp.task("tsc", function() {
     return tsProject.src()
@@ -47,7 +52,7 @@ gulp.task("tsc", function() {
 });
 
 gulp.task('compress', function() {
-    return gulp.src(['tmp/*.js', 'tmp/*/*.js'])
+    return gulp.src(['tmp/*.js', 'tmp/**/*.js'])
         .pipe(minify({
             ext: {
                 src: '.js.old',
@@ -72,4 +77,4 @@ gulp.task('remove-tmp', function(callback) {
     }
 });
 
-gulp.task('default', gulp.series('removeBuild', gulp.parallel('tsc', 'copy-keys', 'copy-views', 'copy-static'), 'compress', 'remove-tmp'));
+gulp.task('default', gulp.series('removeBuild', gulp.parallel('tsc', 'copy-keys', 'copy-views', 'copy-static', 'copy-website'), 'compress', 'remove-tmp'));

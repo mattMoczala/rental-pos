@@ -1,4 +1,5 @@
 import * as SimpleNodeLogger from "simple-node-logger";
+import * as express from 'express';
 
 export let filename = "default.log";
 
@@ -17,4 +18,13 @@ export function logAction(message: string, level: "info" | "error") {
   } else {
     log.error(message);
   }
+}
+
+export function loggerMiddleware(req: express.Request, res: express.Response, next: express.NextFunction){
+  res.on('finish', ()=>{
+    const message = `[${req.subdomains} client ${req.ip}] | ${req.method} ${req.originalUrl} ${res.statusCode}`;
+    (res.statusCode >= 400) ? log.error(message) : log.info(message);
+  })
+
+  next();
 }

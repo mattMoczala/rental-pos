@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "start": "gulp && node build/main.js",
-    "build": "gulp"
+    "start": "gulp && webpack && node build/main.js",
+    "build": "gulp && webpack"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,8 @@
     "@types/express-session": "^1.17.4",
     "@types/http-errors": "^1.8.2",
     "@types/morgan": "^1.9.3",
+    "@types/react": "^18.0.9",
+    "@types/react-dom": "^18.0.4",
     "@types/vhost": "^3.0.4",
     "body-parser": "^1.20.0",
     "connect-flash": "^0.1.1",
@@ -27,10 +29,16 @@
     "gulp-typescript": "^6.0.0-alpha.1",
     "gulp-uglify": "^3.0.2",
     "mongoose": "^6.3.3",
-    "morgan": "^1.10.0",
     "passport": "^0.5.2",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
     "rimraf": "^3.0.2",
     "simple-node-logger": "^21.8.12",
-    "vhost": "^3.0.2"
+    "ts-loader": "^9.3.0",
+    "vhost": "^3.0.2",
+    "webpack": "^5.72.1"
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.9.2"
   }
 }

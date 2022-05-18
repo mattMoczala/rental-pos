@@ -1,20 +1,18 @@
 import * as express from "express";
 import * as https from "https";
 import * as fs from "fs";
-import * as logger from "morgan";
 import * as cookieParser from "cookie-parser";
 import * as createError from "http-errors";
 import * as path from "path";
-import * as vhost from "vhost";
 import * as session from "express-session";
-import { logAction } from "./logger";
+import { logAction, loggerMiddleware } from "./logger";
 let passport = require("passport");
 let bodyParser = require("body-parser");
 import ConnectionConstrustor from "./db/ConnectionConstructor";
 import * as index from './routes/index';
-import * as rent from './routes/rent';
-import * as client from './routes/client';
-import * as item from './routes/item';
+import * as rent from './routes/api/rent';
+import * as client from './routes/api/client';
+import * as item from './routes/api/item';
 import {DBAuth, Auth} from "./types/Auth";
 import TypedRequestBody from "./types/RequestType";
 
@@ -42,8 +40,8 @@ export class Server {
       this.useClientRoutes = false;
       this.useAPIroutes = true;
     } else {
-      this.useClientRoutes = false;
-      this.useAPIroutes = true;
+      this.useClientRoutes = true;
+      this.useAPIroutes = false;
     }
     
   }
@@ -63,11 +61,10 @@ export class Server {
 
     this.app.use(bodyParser.json({ limit: "50mb" }));
     this.app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-    this.app.use(logger("dev"));
+    this.app.use(loggerMiddleware);
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cookieParser());
-    this.app.use(express.static(path.join(__dirname, "static")));
 
     // Handle sessions
     this.app.use(
@@ -87,6 +84,7 @@ export class Server {
     this.app.use(require("connect-flash")());
 
     if (this.useClientRoutes) {
+      this.app.use(express.static(path.join(__dirname, "static")));
     } if (this.useAPIroutes) {
     this.app.use("/", index.router);
     this.app.use("/client", client.router);

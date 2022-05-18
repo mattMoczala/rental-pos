@@ -1,11 +1,3 @@
-//
-//  connectionConstructor.ts
-//  laverie
-//
-//  Created by Maciej Moczała
-//  Copyright © 2019 ATMOS. All rights reserved.
-//
-
 import * as mongoose from "mongoose";
 import { logAction } from "../logger";
 import {Auth} from "../types/Auth";

@@ -1,9 +1,9 @@
 import * as express from "express";
-import ClientModel from "../models/client";
-import Client from "../types/Client";
+import ClientModel from "../../models/client";
+import Client from "../../types/Client";
 import mongoose, { Mongoose } from "mongoose";
-import TypedRequestBody from "../types/RequestType";
-import { logAction } from "../logger";
+import TypedRequestBody from "../../types/RequestType";
+import { logAction } from "../../logger";
 
 export const router = express.Router();
 
@@ -71,7 +71,7 @@ router.post(
       };
       logAction(response.data.message,"info");
       res.status(201);
-      res.set({ "contnet-type": "application/json" });
+      res.set({ "content-type": "application/json" });
       res.send(JSON.stringify(response));
     });
   }
@@ -84,6 +84,7 @@ router.delete(
     res: express.Response,
     next: express.NextFunction
   ) {
+    if (req.query.id.toString().match(/^[0-9a-fA-F]{24}$/)) {
     ClientModel.findByIdAndDelete(
       req.query.id,
       (err: typeof mongoose.Error) => {
@@ -112,5 +113,17 @@ router.delete(
         }
       }
     );
+  } else {
+    let response = {
+      status: "err",
+      data: {
+        message: `not valid object id: "${req.query.id}".`,
+      },
+    };
+    res.status(400);
+    res.set({ "content-type": "application/json" });
+    res.send(JSON.stringify(response));
+    logAction(response.data.message, "error");
   }
+}
 );

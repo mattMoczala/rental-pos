@@ -1,9 +1,9 @@
 import * as express from "express";
-import RentalModel from "../models/rental";
+import RentalModel from "../../models/rental";
 import mongoose from "mongoose";
-import TypedRequestBody from "../types/RequestType";
-import { RentalNotPopulated, RentalPopulatedWithData } from "../types/Rental";
-import { logAction } from "../logger";
+import TypedRequestBody from "../../types/RequestType";
+import { RentalNotPopulated, RentalPopulatedWithData } from "../../types/Rental";
+import { logAction } from "../../logger";
 
 export const router = express.Router();
 
@@ -145,7 +145,7 @@ router.get(
                 message: `GET /rent/changeRentalStatus\tProvided parameter id: "${req.query.id}"  is invalid or does not exist in database.`,
               },
             };
-            res.status(420);
+            res.status(400);
             res.set({ "content-type": "application/json" });
             res.send(JSON.stringify(response));
           }
