@@ -1,1 +1,0 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0});var React=require("react"),react_dom_1=require("react-dom"),Counter_1=require("./Counter");(0,react_dom_1.render)(React.createElement(Counter_1.default,null),document.getElementById("root"));
