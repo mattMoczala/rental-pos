@@ -36,7 +36,26 @@ export default class CCreateOrderSideBar extends React.Component<Props, State> {
     let totalPrice = 0;
     return (
       <Paper style={this.props.style} >
-        <div style={{ width: "100%" }}>
+        <Divider />
+        <Button
+          style={{ width: "100%", fontSize: "1.5em", marginTop: "1em" }}
+          color="success"
+          onClick={this.handleNextButtonClick}
+          disabled={this.props.nextButtonisDisabled}
+        >DALEJ</Button>
+        {this.props.showPrevButton ? (
+          <Button
+            style={{ width: "100%", fontSize: "1.5em" }}
+            color="error"
+            onClick={this.handlePrevButtonClick}
+          >
+            WRÓĆ
+          </Button>
+        ) : (
+          ""
+        )}
+        <Divider style={{marginTop: "2em"}}/>
+        <div style={{width: "100%" }}>
           {this.props.items.map((item) => {
             totalPrice += item.price;
             return (
@@ -73,7 +92,7 @@ export default class CCreateOrderSideBar extends React.Component<Props, State> {
           <div
             style={{
               marginTop: "2em",
-              marginBottom: "1em",
+              marginBottom: "2em",
               textAlign: "center",
             }}
           >
@@ -83,24 +102,6 @@ export default class CCreateOrderSideBar extends React.Component<Props, State> {
           </div>
           <IconButton aria-label="delete" size="small"></IconButton>
         </div>
-        <Divider />
-        <Button
-          style={{ width: "100%", fontSize: "1.5em", marginTop: "1em" }}
-          color="success"
-          onClick={this.handleNextButtonClick}
-          disabled={this.props.nextButtonisDisabled}
-        >DALEJ</Button>
-        {this.props.showPrevButton ? (
-          <Button
-            style={{ width: "100%", fontSize: "1.5em" }}
-            color="error"
-            onClick={this.handlePrevButtonClick}
-          >
-            WRÓĆ
-          </Button>
-        ) : (
-          ""
-        )}
       </Paper>
     );
   }

@@ -2,6 +2,7 @@ import { Button, Paper } from "@mui/material";
 import * as React from "react";
 import ClientSearch from "./CClientSearch";
 import CCreateClientModal from "./CCreateClientModal";
+import AddBoxIcon from "@mui/icons-material/AddBox";
 
 interface State {
   createClientModalisOpen: boolean;
@@ -64,7 +65,10 @@ export default class CSelectClient extends React.Component<Props, State> {
           onClick={this.openCreateClientModal}
           disableRipple
         >
+          <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+          <AddBoxIcon fontSize="large" /><br/>
           Stwórz nowego klienta
+          </div>
         </Button>
         <CCreateClientModal
           isOpen={this.state.createClientModalisOpen}

@@ -104,12 +104,12 @@ export default class CClientSearch extends React.Component<Props, State> {
             id="outlined-basic"
             label="Szukaj"
             variant="filled"
-            style={{ color: "black", width: "100%", position: "absolute", backgroundColor: "white", zIndex: "1" }}
+            style={{ color: "black", width: "100%",top: "0px", position: "sticky", backgroundColor: "white", zIndex: "1" }}
             onChange={this.handleInputChange}
             value={this.state.searchInputValue}
           />
         </ThemeProvider>
-        <div style={{marginTop: "70px"}}>
+        <div>
         {this.state.clients.map((client) => {
           return (
             <CClient

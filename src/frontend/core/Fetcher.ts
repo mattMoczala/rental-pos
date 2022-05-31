@@ -31,6 +31,30 @@ export default class Fetcher {
     });
   }
 
+  static getRentals(byItemId?: string, ongoing?: boolean): Promise<FetcherResponse<Array<Item>>> {
+    return new Promise(async (resolve, reject) => {
+      let params = new URLSearchParams({})
+      typeof ongoing !== 'undefined' && params.append("ongoing",ongoing.toString())
+      typeof byItemId !== 'undefined' && params.append("getOnlyByItemId",byItemId)
+
+      await fetch(`${this.domain}/rent/?` + params, {
+        method: "GET",
+        mode: "cors",
+      }).then((response) => {
+        if (response.ok) {
+          response.json().then((parsedResponse) => {
+            resolve({
+              ok: true,
+              data: parsedResponse.data,
+            });
+          });
+        } else {
+          resolve({ ok: false });
+        }
+      });
+    });
+  }
+
   static postClient(name: string, surname: string, pesel: string, phoneNumber: string, nip: string): Promise<FetcherResponse<undefined>> {
   
     const data = {

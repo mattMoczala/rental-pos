@@ -14,8 +14,11 @@ router.get(
     res: express.Response,
     next: express.NextFunction
   ) {
-    if (req.query.getOnlyOngoing) {
-      await RentalModel.find({ ongoing: true })
+
+    let query: {ongoing?: boolean, rented?: {$elemMatch: {item: typeof req.query.getOnlyByItemId}} } = {}
+    req.query.getOnlyOngoing ? query.ongoing = true : null;
+    req.query.getOnlyByItemId ? query.rented = {$elemMatch: {item: req.query.getOnlyByItemId}} : null;
+      await RentalModel.find(query)
         .populate("client")
         .populate("rented")
         .exec(
@@ -43,36 +46,7 @@ router.get(
             }
           }
         );
-    } else {
-      await RentalModel.find()
-        .populate("client")
-        .populate("rented")
-        .exec(
-          (err: mongoose.MongooseError, rentals: Array<RentalNotPopulated>) => {
-            if (err) {
-              console.log(err);
-
-              const response = {
-                status: "err",
-                data: {
-                  message: `Server error occured.`,
-                },
-              };
-              res.status(500);
-              res.set({ "content-type": "application/json" });
-              res.send(JSON.stringify(response));
-            } else {
-              const response = {
-                status: "succ",
-                data: rentals,
-              };
-              res.status(200);
-              res.set({ "content-type": "application/json" });
-              res.send(JSON.stringify(response));
-            }
-          }
-        );
-    }
+    
   }
 );
 

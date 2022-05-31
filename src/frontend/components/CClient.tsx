@@ -39,9 +39,11 @@ export default class CClient extends React.Component<Props, State> {
   };
 
   deleteClient = () => {
+    if (confirm("Potwierdź usunięcie klienta") == true) {
     Fetcher.deleteClient(this.props.data._id).then(() => {
       this.props.handleClientDelete();
     });
+    }
   };
 
   render(): React.ReactNode {

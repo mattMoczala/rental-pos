@@ -65,8 +65,8 @@ export default class CItem extends React.Component<Props, State> {
             </CardContent>
           </CardActionArea>
           <CardActions disableSpacing>
-            <IconButton aria-label="add">
-              <AddBoxIcon onClick={this.handleClick} />
+            <IconButton aria-label="add" onClick={this.handleClick}>
+              <AddBoxIcon/>
             </IconButton>
             <ExpandMore
               onClick={this.handleExpandClick}
@@ -79,7 +79,7 @@ export default class CItem extends React.Component<Props, State> {
           </CardActions>
           <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
             <CardContent>
-              <COngoingRentals/>
+              <COngoingRentals itemId={this.props._id}/>
             </CardContent>
           </Collapse>
         </Card>

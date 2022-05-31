@@ -214,6 +214,7 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
       <div
         style={{
           display: "flex",
+          height: "100%"
         }}
       >
         <CCreateOrderSideBar
@@ -231,12 +232,14 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
             minWidth: "170px",
             borderRadius: "0px",
             overflowY: "scroll",
-            // boxShadow: "8px 0px 24px 0px rgba(66, 68, 90, 1)",
+            height: this.state.showClientMenu ? "100vh" : "100%",
           }}
         />
         <div
           style={{
             width: "100%",
+            height: "100%",
+            overflowY: "scroll"
           }}
         >
           {this.state.showClientMenu ? (
@@ -251,7 +254,7 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
               <Grid container spacing={4}>
                 {this.state.items.map((item) => {
                   return (
-                    <Grid item sm={12} md={6} lg={4} xl={3} key={item._id}>
+                    <Grid item sm={6} md={6} lg={4} xl={3} key={item._id}>
                       <CItem
                         key={item._id}
                         onItemClick={this.handleDialogOpen}
