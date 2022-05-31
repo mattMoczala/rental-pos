@@ -30,7 +30,7 @@ router.get(
                 message: `Server error occured.`,
               },
             };
-            res.status(500);
+            console.log(err)
             res.set({ "content-type": "application/json" });
             res.send(JSON.stringify(response));
           } else {
@@ -39,7 +39,7 @@ router.get(
               data: items,
             };
             res.status(200);
-            res.set({ "content-type": "application/json" });
+            // res.set({ "content-type": "application/json" });
             res.send(JSON.stringify(response));
           }
         }
@@ -72,7 +72,7 @@ router.post(
       };
       res.status(201);
       logAction(response.data.message,"info");
-      res.set({ "contnet-type": "application/json" });
+      res.set({ "content-type": "application/json" });
       res.send(JSON.stringify(response));
     });
   }

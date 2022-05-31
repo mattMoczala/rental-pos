@@ -1,15 +1,17 @@
 {
     "include": [
-        "src/**/*.ts", "src/frontend/App.tsx", "src/frontend/Counter.tsx", "src/frontend/App.tsx",
+        "src/**/*.ts",
+        //  "src/frontend/App.tsx", "src/frontend/AddItemToRentalMenu.tsx", "src/frontend/App.tsx",
         // "src/*/*.ts",
         // "src/routes/api/rent.ts"
     ],
     "compilerOptions": {
         "allowJs": true,
-        "noImplicitAny": true,
+        "noImplicitAny": false,
         "rootDirs": ["src/"],
         "jsx":"react",
-        "target": "es5"
+        "target": "es5",
+        // "allowSyntheticDefaultImports": true
     }
 }
   

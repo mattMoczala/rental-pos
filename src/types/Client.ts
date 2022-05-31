@@ -1,4 +1,5 @@
 export default interface Client {
+    _id? : string,
     name?: string,
     surname?: string,
     nip?: string,

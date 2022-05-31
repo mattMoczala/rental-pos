@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
   entry: './src/frontend/App.tsx',
+  mode:"development",
   module: {
     rules: [
       {

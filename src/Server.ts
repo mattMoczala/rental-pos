@@ -15,6 +15,7 @@ import * as client from './routes/api/client';
 import * as item from './routes/api/item';
 import {DBAuth, Auth} from "./types/Auth";
 import TypedRequestBody from "./types/RequestType";
+import * as cors from "cors";
 
 
 export class Server {
@@ -58,6 +59,7 @@ export class Server {
         next();
       }
     })
+    this.app.use(cors());
 
     this.app.use(bodyParser.json({ limit: "50mb" }));
     this.app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
@@ -86,6 +88,11 @@ export class Server {
     if (this.useClientRoutes) {
       this.app.use(express.static(path.join(__dirname, "static")));
     } if (this.useAPIroutes) {
+      this.app.use(function (req, res, next) {
+    
+        next();
+    });
+
     this.app.use("/", index.router);
     this.app.use("/client", client.router);
     this.app.use("/rent", rent.router);

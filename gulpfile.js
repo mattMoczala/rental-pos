@@ -4,6 +4,7 @@ let tsProject = ts.createProject("tsconfig.json");
 let minify = require("gulp-minify");
 let rimraf = require("rimraf");
 let uglify = require('gulp-uglify');
+var exec = require('child_process').exec;
 
 let paths = {
     jsOutput: ['./src/*', './src/*/*.js'],
@@ -24,6 +25,14 @@ gulp.task('removeBuild', function(done) {
         done();
     }
 });
+
+gulp.task('create-bundle', function (cb) {
+    exec('webpack', function (err, stdout, stderr) {
+      console.log(stdout);
+      console.log(stderr);
+      cb(err);
+    });
+  })
 
 gulp.task("copy-keys", function() {
     return gulp.src(paths.keys)
@@ -77,4 +86,4 @@ gulp.task('remove-tmp', function(callback) {
     }
 });
 
-gulp.task('default', gulp.series('removeBuild', gulp.parallel('tsc', 'copy-keys', 'copy-views', 'copy-static', 'copy-website'), 'compress', 'remove-tmp'));
+gulp.task('default', gulp.series('removeBuild', gulp.parallel('tsc', 'copy-keys', 'copy-views', 'copy-static', 'copy-website'), 'compress', 'remove-tmp', 'create-bundle'));
