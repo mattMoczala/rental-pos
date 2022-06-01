@@ -1,5 +1,5 @@
 import * as mongoose from "mongoose";
-import {RentalNotPopulated} from "../types/Rental"
+import {RentalNotPopulated} from "../../../types/Rental"
 
 const rentalItem = new mongoose.Schema({
     item: {

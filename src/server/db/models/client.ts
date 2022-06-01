@@ -1,5 +1,5 @@
 import * as mongoose from "mongoose";
-import Client from "../types/Client";
+import Client from "../../../types/Client";
 
 
 const ClientModel = new mongoose.Schema({

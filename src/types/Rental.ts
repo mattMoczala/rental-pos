@@ -15,15 +15,13 @@ export interface RentalPopulatedWithData {
     client: Client,
     createdOn: Date
 }
-
-// type rentmodel = typeof RentalModel;
 export interface RentalNotPopulated{
     priceTotal: number
     startDate: Date
     endDate: Date
     ongoing: boolean
     rented: [{
-        item: string,
+        item: Item,
         itemRealIdentifier: string
     }]
     client: Client,

@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import { logAction } from "../logger";
-import {Auth} from "../types/Auth";
+import {Auth} from "../../types/Auth";
 
 export default class ConnectionConstrustor {
 

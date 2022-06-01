@@ -1,8 +1,8 @@
 import * as express from "express";
-import ClientModel from "../../models/client";
-import Client from "../../types/Client";
+import ClientModel from "../../db/models/client";
+import Client from "../../../types/Client";
 import mongoose, { Mongoose } from "mongoose";
-import TypedRequestBody from "../../types/RequestType";
+import TypedRequestBody from "../../../types/RequestType";
 import { logAction } from "../../logger";
 
 export const router = express.Router();

@@ -1,5 +1,5 @@
 import * as express from 'express';
-import TypedRequestBody from '../types/RequestType';
+import TypedRequestBody from '../../types/RequestType';
 
 export const router = express.Router();
 

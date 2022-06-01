@@ -1,8 +1,8 @@
 import * as express from "express";
-import RentalModel from "../../models/rental";
+import RentalModel from "../../db/models/rental";
 import mongoose from "mongoose";
-import TypedRequestBody from "../../types/RequestType";
-import { RentalNotPopulated, RentalPopulatedWithData } from "../../types/Rental";
+import TypedRequestBody from "../../../types/RequestType";
+import { RentalNotPopulated, RentalPopulatedWithData } from "../../../types/Rental";
 import { logAction } from "../../logger";
 
 export const router = express.Router();

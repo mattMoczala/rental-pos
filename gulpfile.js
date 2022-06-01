@@ -7,11 +7,10 @@ let uglify = require('gulp-uglify');
 var exec = require('child_process').exec;
 
 let paths = {
-    jsOutput: ['./src/*', './src/*/*.js'],
-    keys: ['./src/keys/https/**'],
-    views: ['./src/views/**'],
-    static: ['./src/static/**'],
-    website: ['./src/website/**']
+    jsOutput: ['./src/*', './src/**/*.js'],
+    keys: ['./src/server/config/keys/**'],
+    views: ['./src/server/views/**'],
+    static: ['./src/server/static/**'],
 }
 
 gulp.task('removeBuild', function(done) {
@@ -36,23 +35,19 @@ gulp.task('create-bundle', function (cb) {
 
 gulp.task("copy-keys", function() {
     return gulp.src(paths.keys)
-        .pipe(gulp.dest("build/keys/https"));
+        .pipe(gulp.dest("build/server/config/keys"));
 });
 
 gulp.task("copy-views", function() {
     return gulp.src(paths.views)
-        .pipe(gulp.dest("build/views"));
+        .pipe(gulp.dest("build/server/views"));
 });
 
 gulp.task("copy-static", function() {
     return gulp.src(paths.static)
-        .pipe(gulp.dest("build/static"));
+        .pipe(gulp.dest("build/server/static"));
 });
 
-gulp.task("copy-website", function() {
-    return gulp.src(paths.website)
-        .pipe(gulp.dest("build/website"));
-});
 
 gulp.task("tsc", function() {
     return tsProject.src()
@@ -76,7 +71,7 @@ gulp.task('remove-tmp', function(callback) {
     try {
         rimraf("./tmp/*", function() { console.log("Temporary files removed.") });
         rimraf("./build/*.old", function() { console.log("Temporary files removed.") });
-        rimraf("./build/*/*.old", function() {
+        rimraf("./build/**/*.old", function() {
             console.log("Temporary files removed.");
             callback();
         });
@@ -86,4 +81,4 @@ gulp.task('remove-tmp', function(callback) {
     }
 });
 
-gulp.task('default', gulp.series('removeBuild', gulp.parallel('tsc', 'copy-keys', 'copy-views', 'copy-static', 'copy-website'), 'compress', 'remove-tmp', 'create-bundle'));
+gulp.task('default', gulp.series('removeBuild', gulp.parallel('tsc', 'copy-keys', 'copy-views', 'copy-static'), 'compress', 'remove-tmp', 'create-bundle'));

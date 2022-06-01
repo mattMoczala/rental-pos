@@ -1,6 +1,8 @@
-import { Server } from "./Server";
+import APIServer from "./server/APIServer";
+import ClientServer from "./server/ClientServer";
 
-const backend = new Server(["api.moczaladev.pl"], 8080, {
+
+const backend = new APIServer(["api.moczaladev.pl"], 8080, {
     hostname: "localhost:27017",
     auth: {
         dbName: "relax",
@@ -10,8 +12,8 @@ const backend = new Server(["api.moczaladev.pl"], 8080, {
     }
 });
 
-const frontend = new Server(["moczaladev.pl"], 7070);
+const frontend = new ClientServer(["moczaladev.pl"], 7070);
 
-backend.startWebServer();
-frontend.startWebServer();
+backend.start();
+frontend.start();
 
