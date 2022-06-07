@@ -2,6 +2,7 @@ import { response } from "express";
 import Item from "../../types/Item";
 import Client from "../../types/Client";
 import RentalItem from "../../types/RentalItem";
+import { RentalPopulatedWithData } from "../../types/Rental";
 
 interface FetcherResponse<T> {
   ok: boolean;
@@ -31,12 +32,11 @@ export default class Fetcher {
     });
   }
 
-  static getRentals(byItemId?: string, ongoing?: boolean): Promise<FetcherResponse<Array<Item>>> {
+  static getRentals(byItemId?: string, ongoing?: boolean): Promise<FetcherResponse<Array<RentalPopulatedWithData>>> {
     return new Promise(async (resolve, reject) => {
       let params = new URLSearchParams({})
       typeof ongoing !== 'undefined' && params.append("ongoing",ongoing.toString())
       typeof byItemId !== 'undefined' && params.append("getOnlyByItemId",byItemId)
-
       await fetch(`${this.domain}/rent/?` + params, {
         method: "GET",
         mode: "cors",
@@ -135,7 +135,6 @@ export default class Fetcher {
       }).then((response) => {
         if (response.ok) {
           response.json().then((parsedResponse) => {
-            console.log("gotResponse")
             resolve({
               ok: true
             });
@@ -166,5 +165,19 @@ export default class Fetcher {
         }
       });
     });
+  }
+  static changeRentalStatus(id) {
+    return new Promise(async (resolve, reject) => {
+      await fetch(`${this.domain}/rent/changeRentalStatus/?id=${id}`, {
+        method: "GET",
+        mode: "cors",
+      }).then((response)=>{
+        if (response.ok) {
+          resolve({ok: true})
+        } else {
+          resolve({ok: false})
+        }
+      })
+    })
   }
 }

@@ -27,7 +27,6 @@ export default class CSelectClient extends React.Component<Props, State> {
 
   resolveCreateClientModal = (res: boolean) => {
     if (res) {
-      console.log("created client");
       this.setState({ newClientsCreated: true });
       this.setState({ newClientsCreated: false });
     }
@@ -58,8 +57,7 @@ export default class CSelectClient extends React.Component<Props, State> {
           style={{
             width: "40%",
             overflowY: "clip",
-            backgroundColor: "#121212",
-            zIndex: "2",
+            backgroundColor: "rgb(30,30,30)",
             borderRadius: "0px"
           }}
           onClick={this.openCreateClientModal}

@@ -17,7 +17,7 @@ import {ExpandMore} from './CExpandMore'
 import COngoingRentals from "./COngoingRentals";
 
 interface State {
-  expanded: boolean
+  expanded: boolean,
 }
 interface Props extends Item {
   onItemClick: Function;
@@ -25,18 +25,50 @@ interface Props extends Item {
 
 
 export default class CItem extends React.Component<Props, State> {
+
+  static instances: CItem[] = []
+  private instanceIndex: number
+
   constructor(props: Props) {
     super(props);
     this.state = {expanded: false}
+    this.instanceIndex = CItem.instances.length
+    CItem.instances.push(this)
+  }
+
+  componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
+    CItem.instances[this.instanceIndex] = this;
   }
 
   private handleClick = () => {
     this.props.onItemClick(this.props);
   };
 
+  updateAllItems = () => {
+    CItem.instances.forEach(instance=> {
+      if (instance.state.expanded 
+        && instance !==this
+        ) {
+        instance.setState({
+          expanded: false
+        })
+      }
+    })
+  }
+
   handleExpandClick = ()=> {
     const update = {expanded: !this.state.expanded};
     this.setState(update)
+
+
+    // uncomment for allowing only one item to be expanded
+    // CItem.instances.forEach(instance=> {
+    //   if (instance.state.expanded) {
+    //     instance.setState({
+    //       expanded: false
+    //     })
+    //   }
+    // })
   }
 
   render() {
@@ -45,7 +77,7 @@ export default class CItem extends React.Component<Props, State> {
 
     return (
       <>
-        <Card sx={{ width: "100%" }} elevation={16}>
+        <Card sx={{ width: "100%" }} elevation={12}>
           <CardActionArea onClick={this.handleClick}>
             <CardMedia
               component="img"
@@ -79,7 +111,7 @@ export default class CItem extends React.Component<Props, State> {
           </CardActions>
           <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
             <CardContent>
-              <COngoingRentals itemId={this.props._id}/>
+              <COngoingRentals itemId={this.props._id} forceParentUpdate={this.updateAllItems}/>
             </CardContent>
           </Collapse>
         </Card>

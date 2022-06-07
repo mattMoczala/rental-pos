@@ -36,9 +36,18 @@ export default class CCreateOrderSideBar extends React.Component<Props, State> {
     let totalPrice = 0;
     return (
       <Paper style={this.props.style} >
-        <Divider />
+        <div style={{
+          textAlign: "center",
+          position: "sticky",
+          backgroundColor: "rgb(30,30,30)",
+          boxShadow: "0px 2px 28px 8px rgba(0,0,0,0.75)",
+          top:"0",
+          zIndex: "1",
+          paddingTop: "1.5em",
+          paddingBottom: "1.5em",
+        }}>
         <Button
-          style={{ width: "100%", fontSize: "1.5em", marginTop: "1em" }}
+          style={{ width: "100%", fontSize: "1.5em", }}
           color="success"
           onClick={this.handleNextButtonClick}
           disabled={this.props.nextButtonisDisabled}
@@ -54,9 +63,10 @@ export default class CCreateOrderSideBar extends React.Component<Props, State> {
         ) : (
           ""
         )}
-        <Divider style={{marginTop: "2em"}}/>
-        <div style={{width: "100%" }}>
-          {this.props.items.map((item) => {
+        </div>
+        <Divider/>
+        <div style={{width: "100%",paddingBottom: "100px" }}>
+          {this.props.items.map((item,index) => {
             totalPrice += item.price;
             return (
               <div
@@ -67,7 +77,7 @@ export default class CCreateOrderSideBar extends React.Component<Props, State> {
                   paddingRight: "1em",
                   borderBottom: "2px solid #2e2e2e",
                 }}
-                key={item._id}
+                key={item._id+index+item.itemRealIdentifier}
               >
                 <Typography style={{ color: "white" }}>
                   {item.name} - nr: {item.itemRealIdentifier}
@@ -91,16 +101,24 @@ export default class CCreateOrderSideBar extends React.Component<Props, State> {
           })}
           <div
             style={{
-              marginTop: "2em",
-              marginBottom: "2em",
               textAlign: "center",
+              position: "fixed",
+              width: this.props.style.minWidth? this.props.style.minWidth : "170px",
+              backgroundColor: "rgb(30,30,30)",
+              boxShadow: "0px -1px 28px 8px rgba(0,0,0,0.75)",
+              bottom:"0"
             }}
           >
-            <Typography style={{ color: "white" }} variant="h5">
-              Suma: {totalPrice} zł
+            <Divider/>
+            <div style={{padding:"1.5em"}}>
+            <Typography variant="body2" color="text.secondary">
+              w sumie:
             </Typography>
+            <Typography style={{ color: "white" }} variant="h5">
+              {totalPrice} zł
+            </Typography>
+            </div>
           </div>
-          <IconButton aria-label="delete" size="small"></IconButton>
         </div>
       </Paper>
     );

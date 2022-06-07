@@ -4,9 +4,10 @@ import Client from "./Client"
 // import RentalModel from "../models/rental"
 
 export interface RentalPopulatedWithData {
+    _id?: string,
     priceTotal: number,
-    startDate: Date,
-    endDate: Date,
+    startDate: string,
+    endDate: string,
     ongoing: boolean,
     rented: [{
         item: Item,
@@ -16,6 +17,7 @@ export interface RentalPopulatedWithData {
     createdOn: Date
 }
 export interface RentalNotPopulated{
+    _id?: string,
     priceTotal: number
     startDate: Date
     endDate: Date

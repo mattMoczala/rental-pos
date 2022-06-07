@@ -1,9 +1,14 @@
 import {
   Box,
   Button,
+  createTheme,
   Dialog,
+  FormControlLabel,
   Grid,
+  Paper,
+  Switch,
   TextField,
+  ThemeProvider,
   Typography,
 } from "@mui/material";
 import * as React from "react";
@@ -18,6 +23,8 @@ import CSnackBar from "../components/CSnackBar";
 
 interface State {
   items: Item[];
+  searchInputValue: string;
+  itemsFiltered: Item[];
   dialogOpen: boolean;
   confirmOrderDialogOpen: boolean;
   rentalItemsSelected: RentalItem[];
@@ -25,8 +32,8 @@ interface State {
   showClientMenu: boolean;
   selectedClientId: string;
   selectedClientName: string;
-  showSnackBar: boolean,
-  snackBarMessage: string
+  showSnackBar: boolean;
+  snackBarMessage: string;
 }
 interface Props {}
 
@@ -45,8 +52,10 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
 
     this.state = {
       snackBarMessage: "",
+      searchInputValue: "",
       showSnackBar: false,
       items: [],
+      itemsFiltered: [],
       confirmOrderDialogOpen: false,
       selectedClientName: "",
       dialogOpen: false,
@@ -63,23 +72,24 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
       if (response.ok && response.data) {
         this.setState({
           items: response.data,
+          itemsFiltered: response.data,
         });
       }
     });
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     document.removeEventListener("keyup", this.handleKeyStroke, false);
   }
 
-  handleKeyStroke = ({key}) => {
+  handleKeyStroke = ({ key }) => {
     if (key === "Escape") {
       this.setState({
         dialogOpen: false,
-        modalInput: ""
-      })
+        modalInput: "",
+      });
     }
-  }
+  };
 
   handleDialogOpen = (item: Item) => {
     this.selectedItem = item;
@@ -188,25 +198,45 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
             showClientMenu: false,
             selectedClientId: "",
             showSnackBar: true,
-            snackBarMessage: "Pomyślnie utworzono zamówienie"
+            snackBarMessage: "Pomyślnie utworzono zamówienie",
           });
           setTimeout(() => {
             this.setState({
-              showSnackBar: false
-            })
+              showSnackBar: false,
+            });
           }, 3500);
-        } else {this.setState({
-          showSnackBar: true,
-          snackBarMessage: "Wystąpił błąd podczas tworzenia zamówienia"
-        });
-        setTimeout(() => {
+        } else {
           this.setState({
-            showSnackBar: false
-          })
-        }, 3500);
+            showSnackBar: true,
+            snackBarMessage: "Wystąpił błąd podczas tworzenia zamówienia",
+          });
+          setTimeout(() => {
+            this.setState({
+              showSnackBar: false,
+            });
+          }, 3500);
         }
       });
     }
+  };
+
+  private _filter = (filter) => {
+    let filtered = [];
+    this.state.items.forEach((item) => {
+      if (item.name.toUpperCase().indexOf(filter.toUpperCase()) > -1) {
+        filtered.push(item);
+      }
+    });
+    return filtered;
+  };
+
+  private handleInputChange = (e: React.ChangeEvent) => {
+    const inputValue = (e.target as HTMLInputElement).value;
+
+    this.setState({
+      searchInputValue: inputValue,
+      itemsFiltered: this._filter(inputValue),
+    });
   };
 
   render() {
@@ -214,7 +244,7 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
       <div
         style={{
           display: "flex",
-          height: "100%"
+          height: "100%",
         }}
       >
         <CCreateOrderSideBar
@@ -239,7 +269,7 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
           style={{
             width: "100%",
             height: "100%",
-            overflowY: "scroll"
+            overflowY: "scroll",
           }}
         >
           {this.state.showClientMenu ? (
@@ -247,14 +277,57 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
           ) : (
             <div
               style={{
-                overflowY: "scroll",
-                padding: "2em",
               }}
             >
-              <Grid container spacing={4}>
-                {this.state.items.map((item) => {
+              <ThemeProvider
+                theme={createTheme({
+                  palette: {
+                    mode: "dark",
+                  },
+                })}
+              >
+                <Paper
+                  style={{
+                    borderRadius: "0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "1.5em",
+                    top: "0px",
+                    zIndex:"1",
+                    position: "sticky"
+                  }}
+                >
+                  <TextField
+                    id="filled-basic"
+                    label="Wyszukiwanie"
+                    variant="filled"
+                    style={{ width: "75%", marginRight: "5%" }}
+                    onChange={this.handleInputChange}
+                  />
+                  {/* <FormControlLabel control={<Switch />} label="Historia" style={{width:"20%"}} /> */}
+                  <Grid
+                    component="label"
+                    container
+                    alignItems="center"
+                    spacing={1}
+                    width="20%"
+                    style={{cursor: "pointer"}}
+                  >
+                    <FormControlLabel control={<Switch defaultChecked />} label="Sprzedaż" />
+                  </Grid>
+                </Paper>
+              </ThemeProvider>
+              <Grid container spacing={4} style={{padding: "2em"}}>
+                {this.state.itemsFiltered.map((item) => {
                   return (
-                    <Grid item sm={6} md={6} lg={4} xl={3} key={item._id}>
+                    <Grid item 
+                    sm={8} 
+                    md={6} 
+                    lg={4} 
+                    justifyContent="center"
+                    alignItems="center"
+                    key={item._id}>
                       <CItem
                         key={item._id}
                         onItemClick={this.handleDialogOpen}
@@ -300,7 +373,7 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
               </Typography>
               <div style={{ width: "100%" }}>
                 <TextField
-                  autoComplete='off'
+                  autoComplete="off"
                   style={{
                     marginBottom: 25,
                     marginTop: 25,
@@ -351,7 +424,10 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
           isOpen={this.state.confirmOrderDialogOpen}
           resolveCallback={this.handleOrderConfirm}
         />
-        <CSnackBar open={this.state.showSnackBar} message={this.state.snackBarMessage}/>
+        <CSnackBar
+          open={this.state.showSnackBar}
+          message={this.state.snackBarMessage}
+        />
       </div>
     );
   }

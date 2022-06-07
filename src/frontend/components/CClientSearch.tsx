@@ -1,16 +1,10 @@
 import * as React from "react";
 import Fetcher from "../core/Fetcher";
 import Client from "../../types/Client";
-import { createTheme, TextField, ThemeProvider } from "@mui/material";
+import { createTheme, Paper, TextField, ThemeProvider } from "@mui/material";
 import CClient from "./CClient";
 import filter from "../core/clientFilter";
 import CSnackBar from "./CSnackBar";
-
-const theme = createTheme({
-  palette: {
-    mode: "light",
-  },
-});
 
 interface State {
   fetchedClients: Client[];
@@ -99,32 +93,40 @@ export default class CClientSearch extends React.Component<Props, State> {
           ...this.props.style,
         }}
       >
-        <ThemeProvider theme={theme}>
+        <Paper
+          style={{
+            padding: "1.5em",
+            borderRadius: 0,
+            top: "0px",
+            position: "sticky",
+            zIndex: "1",
+          }}
+        >
           <TextField
             id="outlined-basic"
             label="Szukaj"
             variant="filled"
-            style={{ color: "black", width: "100%",top: "0px", position: "sticky", backgroundColor: "white", zIndex: "1" }}
+            style={{ width: "100%"}}
             onChange={this.handleInputChange}
             value={this.state.searchInputValue}
           />
-        </ThemeProvider>
+        </Paper>
         <div>
-        {this.state.clients.map((client) => {
-          return (
-            <CClient
-              data={client}
-              key={client._id}
-              handleClientSelection={this.handleClientSelection}
-              selectedClientId={this.state.selectedClientId}
-              handleClientDelete={this.handleClientDelete}
-            />
-          );
-        })}
-        <CSnackBar
-          open={this.state.showSnackBar}
-          message={this.state.snackBarMessage}
-        />
+          {this.state.clients.map((client) => {
+            return (
+              <CClient
+                data={client}
+                key={client._id}
+                handleClientSelection={this.handleClientSelection}
+                selectedClientId={this.state.selectedClientId}
+                handleClientDelete={this.handleClientDelete}
+              />
+            );
+          })}
+          <CSnackBar
+            open={this.state.showSnackBar}
+            message={this.state.snackBarMessage}
+          />
         </div>
       </div>
     );

@@ -13,7 +13,6 @@ export default class ClientServer extends Server implements IServerChild{
   }
 
   private _setUpCustomRoutes() {
-    console.log(__dirname+ "/server/static")
     this.app.use(express.static(path.join(__dirname, "static")));
   }
 

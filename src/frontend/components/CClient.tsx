@@ -52,7 +52,7 @@ export default class CClient extends React.Component<Props, State> {
         style={{
           border:
             this.props.selectedClientId === this.props.data._id
-              ? "5px solid rgb(123,185,114)"
+              ? "6px solid rgb(123,185,114)"
               : "0px solid rgb(196, 196, 196)",
           borderRadius: "2px",
           margin: "1em",

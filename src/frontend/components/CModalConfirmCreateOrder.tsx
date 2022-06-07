@@ -12,8 +12,6 @@ import {
   FormGroup,
   FormHelperText,
   InputAdornment,
-  Paper,
-  TextField,
   Typography,
 } from "@mui/material";
 import * as React from "react";
@@ -42,12 +40,12 @@ export default class CModalConfirmCreateOrder extends React.Component<
     this.state = {
       orderPrice: this.itemsPriceSum,
       discount: false,
-      fixedPrice: 0,
+      fixedPrice: -1,
     };
   }
 
   private itemsPriceSum = (): number => {
-    if (!this.state.discount || this.state.fixedPrice === 0) {
+    if (!this.state.discount || this.state.fixedPrice === -1) {
       let sum = 0;
       this.props.itemsInOrder.forEach((item) => {
         sum += item.price;
@@ -73,7 +71,6 @@ export default class CModalConfirmCreateOrder extends React.Component<
     const prevVal = this.state.discount;
     this.setState({
       discount: !prevVal,
-      fixedPrice: 0,
     });
   };
 
@@ -87,7 +84,7 @@ export default class CModalConfirmCreateOrder extends React.Component<
   render() {
     return (
       <Dialog open={this.props.isOpen}>
-        <Box>
+        <Box style={{padding: "25px"}}>
           <DialogTitle>Potwierdź zamówienie</DialogTitle>
           <DialogContent>
             <Typography>
@@ -150,6 +147,13 @@ export default class CModalConfirmCreateOrder extends React.Component<
               onClick={this.handleClick}
               id="succ"
               size="large"
+              style={{
+                borderBottomRightRadius: 0,
+                borderTopRightRadius: 0,
+                margin:0,
+                width: "60%"
+              }}
+              variant="contained"
             >
               Zatwierdź
             </Button>
@@ -158,6 +162,13 @@ export default class CModalConfirmCreateOrder extends React.Component<
               onClick={this.handleClick}
               id="err"
               size="large"
+              variant="contained"
+              style={{
+                borderBottomLeftRadius: 0,
+                borderTopLeftRadius: 0,
+                margin:0,
+                width: "40%"
+              }}
             >
               Anuluj
             </Button>

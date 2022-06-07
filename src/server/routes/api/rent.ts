@@ -16,11 +16,11 @@ router.get(
   ) {
 
     let query: {ongoing?: boolean, rented?: {$elemMatch: {item: typeof req.query.getOnlyByItemId}} } = {}
-    req.query.getOnlyOngoing ? query.ongoing = true : null;
+    req.query.ongoing ? query.ongoing = true : null;
     req.query.getOnlyByItemId ? query.rented = {$elemMatch: {item: req.query.getOnlyByItemId}} : null;
       await RentalModel.find(query)
         .populate("client")
-        .populate("rented")
+        .populate("rented.item")
         .exec(
           (err: mongoose.MongooseError, rentals: Array<RentalNotPopulated>) => {
             if (err) {
