@@ -32,6 +32,26 @@ export default class Fetcher {
     });
   }
 
+  static getOrders() {
+    return new Promise(async(resolve, reject) => {
+      await fetch(`${this.domain}/rent/`, {
+        method: "GET",
+        mode: "cors",
+      }).then(response => {
+        if (response.ok) {
+          response.json().then((parsedResponse) => {
+            resolve({
+              ok: true,
+              data: parsedResponse.data
+            })
+          })
+        } else {
+          resolve({ok: false})
+        }
+      })
+    })
+  }
+
   static getRentals(byItemId?: string, ongoing?: boolean): Promise<FetcherResponse<Array<RentalPopulatedWithData>>> {
     return new Promise(async (resolve, reject) => {
       let params = new URLSearchParams({})

@@ -20,9 +20,11 @@ import CSelectClient from "../components/CSelectClient";
 import CModalConfirmCreateOrder from "../components/CModalConfirmCreateOrder";
 import Fetcher from "../core/Fetcher";
 import CSnackBar from "../components/CSnackBar";
+import COrderHistory  from "../components/COrderHistory";
 
 interface State {
   items: Item[];
+  showCheckoutMenu: boolean;
   searchInputValue: string;
   itemsFiltered: Item[];
   dialogOpen: boolean;
@@ -52,6 +54,7 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
 
     this.state = {
       snackBarMessage: "",
+      showCheckoutMenu: true,
       searchInputValue: "",
       showSnackBar: false,
       items: [],
@@ -177,6 +180,12 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
     });
   };
 
+  private handleSwitchChange = () => {
+    this.setState({
+      showCheckoutMenu: !this.state.showCheckoutMenu,
+    });
+  };
+
   private handleOrderConfirm = (reject: boolean, orderPrice: number) => {
     this.setState({
       confirmOrderDialogOpen: false,
@@ -275,10 +284,7 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
           {this.state.showClientMenu ? (
             <CSelectClient handleClientSelection={this.handleClientSelection} />
           ) : (
-            <div
-              style={{
-              }}
-            >
+            <div>
               <ThemeProvider
                 theme={createTheme({
                   palette: {
@@ -294,8 +300,8 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
                     justifyContent: "center",
                     padding: "1.5em",
                     top: "0px",
-                    zIndex:"1",
-                    position: "sticky"
+                    zIndex: "1",
+                    position: "sticky",
                   }}
                 >
                   <TextField
@@ -305,44 +311,58 @@ export default class CreateOrderMenu extends React.Component<Props, State> {
                     style={{ width: "75%", marginRight: "5%" }}
                     onChange={this.handleInputChange}
                   />
-                  {/* <FormControlLabel control={<Switch />} label="Historia" style={{width:"20%"}} /> */}
                   <Grid
                     component="label"
                     container
                     alignItems="center"
                     spacing={1}
                     width="20%"
-                    style={{cursor: "pointer"}}
+                    style={{ cursor: "pointer" }}
                   >
-                    <FormControlLabel control={<Switch defaultChecked />} label="Sprzedaż" />
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          value={this.state.showCheckoutMenu}
+                          onClick={this.handleSwitchChange}
+                          defaultChecked
+                        />
+                      }
+                      label="Sprzedaż"
+                    />
                   </Grid>
                 </Paper>
               </ThemeProvider>
-              <Grid container spacing={4} style={{padding: "2em"}}>
-                {this.state.itemsFiltered.map((item) => {
-                  return (
-                    <Grid item 
-                    sm={8} 
-                    md={6} 
-                    lg={4} 
-                    justifyContent="center"
-                    alignItems="center"
-                    key={item._id}>
-                      <CItem
+              {this.state.showCheckoutMenu ? (
+                <Grid container spacing={4} style={{ padding: "2em" }}>
+                  {this.state.itemsFiltered.map((item) => {
+                    return (
+                      <Grid
+                        item
+                        sm={8}
+                        md={6}
+                        lg={4}
+                        justifyContent="center"
+                        alignItems="center"
                         key={item._id}
-                        onItemClick={this.handleDialogOpen}
-                        _id={item._id}
-                        name={item.name}
-                        price={item.price}
-                        image={item.image}
-                        unitsAviable={item.unitsAviable}
-                        unitsTotal={item.unitsTotal}
-                        createdOn={item.createdOn}
-                      />
-                    </Grid>
-                  );
-                })}
-              </Grid>
+                      >
+                        <CItem
+                          key={item._id}
+                          onItemClick={this.handleDialogOpen}
+                          _id={item._id}
+                          name={item.name}
+                          price={item.price}
+                          image={item.image}
+                          unitsAviable={item.unitsAviable}
+                          unitsTotal={item.unitsTotal}
+                          createdOn={item.createdOn}
+                        />
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              ) : (
+                <COrderHistory/>
+              )}
             </div>
           )}
         </div>
